@@ -22,3 +22,15 @@ def update(name):
     first_game.name = name
     db.session.commit()
     return first_game.name
+
+@app.route('/delete')
+def delete():
+    first_game = Games.query.first()
+    db.session.delete(first_game)
+    db.session.commit()
+    return "Deleted the first game"
+
+@app.route('/count')
+def count():
+    number_of_games = Games.query.count()
+    return f"You have {number_of_games} games"
