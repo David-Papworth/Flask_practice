@@ -29,3 +29,17 @@ def delete():
     db.session.delete(first_task)
     db.session.commit()
     return "Deleted the first task"
+
+@app.route('/complete/<int:id>')
+def complete(id):
+    task = Task.query.filter_by(id=id).first()
+    task.complete = True
+    db.session.commit()
+    return f"The {id} task is complete"
+
+@app.route('/incomplete/<int:id>')
+def incomplete(id):
+    task = Task.query.filter_by(id=id).first()
+    task.complete = False
+    db.session.commit()
+    return f"The {id} task is incomplete"
