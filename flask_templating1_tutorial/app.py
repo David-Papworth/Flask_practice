@@ -10,5 +10,10 @@ def ben():
 def harry():
     return render_template('harry.html')
 
+@app.route('/show_b_names')
+def show_b_names():
+    names = ["ben", "harry", "bob", "jay", "matt", "bill"]
+    return render_template('names.html', names = names)
+
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
