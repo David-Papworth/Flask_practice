@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 {% block body %}
 <br>
+Original Task: {{task.description}}
+<br>
 <form action='' method="POST">
     {{ form.hidden_tag() }}
     {{ form.description.label }} {{form.description}}

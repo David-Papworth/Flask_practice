@@ -1,6 +1,7 @@
 from application import app, db
 from application.models import Task
-from flask import render_template
+from application.forms import TaskForm
+from flask import render_template, request, redirect, url_for
 
 @app.route('/')
 @app.route('/home')
@@ -9,34 +10,34 @@ def home():
     output = ""
     return render_template("index.html", title="Home", all_tasks=all_tasks)
 
-@app.route('/create')
+@app.route('/create', methods=["GET", "POST"])
 def created():
-    new_task = Task(description="New task added", complete=False)
-    db.session.add(new_task)
-    db.session.commit()
-    return "Added new task to database"
+    form = TaskForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            new_task = Task(description=form.description.data)
+            print(new_task.complete)
+            db.session.add(new_task)
+            db.session.commit()
+            return redirect(url_for('home'))
+    return render_template('add.html', title="Create a Task", form=form)
 
-@app.route('/read')
-def read():
-    all_tasks = Task.query.all()
-    task_string = ""
-    for tas in all_tasks:
-        task_string += "<br>"+ tas.description
-    return task_string
+@app.route('/update/<int:id>', methods=["GET", "POST"])
+def update(id):
+    form = TaskForm()
+    task = Task.query.filter_by(id=id).first()
+    if request.method == "POST":
+        task.description = form.description.data
+        db.session.commit()
+        return redirect(url_for('home'))
+    return render_template("update.html", title="Updata Task", form=form, task=task)
 
-@app.route('/update/<name>')
-def update(name):
-    first_task = Task.query.first()
-    first_task.description = name
+@app.route('/delete/<int:id>', methods=["GET", "POST"])
+def delete(id):
+    task = Task.query.filter_by(id=id).first()
+    db.session.delete(task)
     db.session.commit()
-    return first_task.description
-
-@app.route('/delete')
-def delete():
-    first_task = Task.query.first()
-    db.session.delete(first_task)
-    db.session.commit()
-    return "Deleted the first task"
+    return redirect(url_for('home'))
 
 @app.route('/complete/<int:id>')
 def complete(id):
