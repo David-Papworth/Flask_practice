@@ -1,8 +1,16 @@
 from application import app, db
 from application.models import Task
+from flask import render_template
 
-@app.route('/add')
-def add():
+@app.route('/')
+@app.route('/home')
+def home():
+    all_tasks = Task.query.all()
+    output = ""
+    return render_template("index.html", title="Home", all_tasks=all_tasks)
+
+@app.route('/create')
+def created():
     new_task = Task(description="New task added", complete=False)
     db.session.add(new_task)
     db.session.commit()
